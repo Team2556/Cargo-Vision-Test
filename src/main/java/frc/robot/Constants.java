@@ -14,9 +14,9 @@ public class Constants {
     public static final int lFMotorPort = 4;
     public static final int lRMotorPort = 8;
 
-    public static final double kTrackWidth = 0.5588;
+    public static final double kTrackWidth = 0.6858; // 27in
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.762;
+    public static final double kWheelBase = 0.7874; // 31in
     // Distance between centers of front and back wheels on robot
 
     public static final MecanumDriveKinematics DriveKinematics =
@@ -30,7 +30,10 @@ public class Constants {
     public static final int ShooterMotorPort = 0;
 
     // Feeder Constants
+    public static final int intakeMotorPort = 0;
     public static final int feederMotorPort = 0;
+    public static final double intakeMotorSpeed = 0.5;
+    public static final double feederMotorSpeed = 0.5;
 
     // Elevator Constants
     
@@ -39,7 +42,7 @@ public class Constants {
     public static final int XboxControllerPort = 0;
 
     // Vision Constants
-    public static final int IMG_WIDTH = 320;
-    public static final int IMG_HEIGHT = 240;
+    public static final int IMG_WIDTH = 1280;
+    public static final int IMG_HEIGHT = 720;
 
 }
