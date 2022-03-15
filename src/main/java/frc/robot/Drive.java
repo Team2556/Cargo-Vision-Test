@@ -4,14 +4,17 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
+import edu.wpi.first.wpilibj.DigitalInput;
 // import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
-// import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-// import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 public class Drive extends TimedRobot {
     private final CANSparkMax rFMotor = new CANSparkMax(Constants.rFMotorPort, MotorType.kBrushless);
@@ -19,42 +22,41 @@ public class Drive extends TimedRobot {
     private final CANSparkMax lFMotor = new CANSparkMax(Constants.lFMotorPort, MotorType.kBrushless);
     private final CANSparkMax lRMotor = new CANSparkMax(Constants.lRMotorPort, MotorType.kBrushless);
 
+    // private final DigitalInput rFLimit = new DigitalInput(Constants.rFLimitPort);    
+    // private final DigitalInput rRLimit = new DigitalInput(Constants.rRLimitPort);
+    // private final DigitalInput lFLimit = new DigitalInput(Constants.lFLimitPort);
+    // private final DigitalInput lRLimit = new DigitalInput(Constants.lRLimitPort);    
+
+    // private final MotorControllerGroup rightMotors = new MotorControllerGroup(rFMotor, rRMotor);
+    // private final MotorControllerGroup leftMotors = new MotorControllerGroup(lFMotor, lRMotor);
+
     private final MecanumDrive drive = new MecanumDrive(lFMotor, lRMotor, rFMotor, rRMotor);
-    // private final Gyro gyro = new ADXRS450_Gyro();
+    // private final DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+    // AHRS gyro = new AHRS(); // navX gyro
+    
     // private final MecanumDriveOdometry odometry = 
     //     new MecanumDriveOdometry(
     //         Constants.DriveKinematics, 
     //         gyro.getRotation2d());
 
-    private final XboxController xbox = new XboxController(Constants.XboxControllerPort);
-
-    private Vision vision = new Vision();
+    // private final XboxController xbox = new XboxController(Constants.XboxControllerPort);
+    // private Vision vision = new Vision();
 
     public void driveInit() {
         // gyro.reset();
         rFMotor.setInverted(true);
         rRMotor.setInverted(true);
     }
-
-    public void spotRed() {
-
+    
+    public void mecanumDrive(double ySpeed, double xSpeed, double zRotation) {
+        drive.driveCartesian(ySpeed, xSpeed, zRotation);
     }
 
-    public void spotBlue() {
+    // public void dropDrive(double xSpeed, double zRotation) {
+    //     differentialDrive.arcadeDrive(xSpeed, zRotation);
+    // }
 
-    }
-
-    public void driveToCargo() {
-        double turn = vision.visionTurn();
-        drive.driveCartesian(0, 0, turn * 0.005);
-    }
-    public void teleDriveToCargo() {
-        if (xbox.getAButton()) {
-            double turn = vision.visionTurn();
-            drive.driveCartesian(0, 0, turn * 0.005);    
-        }
-        else {
-            drive.driveCartesian(xbox.getLeftY(), xbox.getLeftX(), xbox.getRightX());
-        }
-    }
+    // public void disableDrive() {
+    //     differentialDrive.arcadeDrive(0, 0);
+    // }
 }

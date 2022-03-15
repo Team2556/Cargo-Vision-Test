@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,9 +21,17 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+    
+  PIDController forwardController = new PIDController(Constants.visionLinearP, 0, Constants.visionLinearD);
+  PIDController turnController = new PIDController(Constants.visionAngularP, 0, Constants.visionAngularD);
 
+  XboxController xbox = new XboxController(0);
+
+  // private OI input = new OI();
   private Drive drive = new Drive();
-  private Vision vision = new Vision();
+  private Shooter shooter = new Shooter();
+  private Intake intake = new Intake();
+  private CargoVision cargoVision = new CargoVision();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -34,7 +44,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     drive.driveInit();
-    vision.visionInit();
+    shooter.shooterInit();
+    intake.intakeInit();
+    cargoVision.visionInit();
   }
 
   /**
@@ -45,9 +57,7 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-    vision.visionPeriodic();
-  }
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -72,7 +82,6 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
-        drive.driveToCargo();
         break;
       case kDefaultAuto:
       default:
@@ -88,7 +97,51 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.teleDriveToCargo();
+      double forwardSpeed;
+      double sidewayspeed;
+      double rotationSpeed;
+      SmartDashboard.putNumber("turn", cargoVision.getRotationValue());
+      if (xbox.getAButton()) {
+          forwardSpeed = turnController.calculate(cargoVision.getForwardValue(), Constants.goalRangeMeters);
+          forwardSpeed = 0;
+          sidewayspeed = 0;
+          rotationSpeed = -turnController.calculate(cargoVision.getRotationValue(), 0);
+      } 
+      else {
+          // Manual Driver Mode
+          forwardSpeed = -xbox.getLeftY();
+          sidewayspeed = xbox.getLeftX();
+          rotationSpeed = xbox.getRightX();
+      }
+      // Use our forward/turn speeds to control the drivetrain
+      drive.mecanumDrive(forwardSpeed, sidewayspeed, rotationSpeed);
+
+
+    // shooter.getShooterPercent();
+    // shooter.atPercentSetpoint();
+
+    // if (input.shoot) {
+    //   shooter.setShooterPercent(1.0);
+    //   if (shooter.atPercentSetpoint()) {
+    //     // intake.runIntake();
+    //     intake.runFeeder();
+    //   }
+    // }
+    // else {
+    //   shooter.setShooterPercent(0.0);
+    //   // intake.stopIntake();
+    //   intake.stopFeeder();
+    // }
+    // if (input.mecanumDrive) {
+    //   drive.mecanumDrive(input.forwardSpeed, input.sidewaySpeed, input.rotationSpeed);
+    // }
+    // else if (!input.mecanumDrive) {
+    //   drive.dropDrive(input.forwardSpeed, input.sidewaySpeed);
+
+    // }
+    // else {
+    //   drive.disableDrive();
+    // }
   }
 
   /** This function is called once when the robot is disabled. */
